@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request
-from models.schemas import ObjectiveQuestion, ObjectiveAnswer, ScoreResponse
+from schemas import ObjectiveQuestion, ObjectiveAnswer, ScoreResponse
 from services.openrouter import get_objective_question, check_objective_answer
 
 router = APIRouter(prefix="/objective", tags=["Objective Quiz"])
@@ -36,4 +36,5 @@ async def submit_answer(answer: ObjectiveAnswer, request: Request):
             question_number=answer.question_number
         )
     except Exception as e:
+
         raise HTTPException(status_code=500, detail=f"Failed to check answer: {e}")
