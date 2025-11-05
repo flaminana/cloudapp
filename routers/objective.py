@@ -38,3 +38,4 @@ async def submit_answer(answer: ObjectiveAnswer, request: Request):
     except Exception as e:
 
         raise HTTPException(status_code=500, detail=f"Failed to check answer: {e}")
+
