@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from models.schemas import DailyPrompt, STTResult, FinalAnswer, ScoreFeedback
+from schemas import DailyPrompt, STTResult, FinalAnswer, ScoreFeedback
 from services.openrouter import generate_german_prompt
 from services.vosk_stt import transcribe_audio
 from services.audio_convert import convert_webm_to_wav
@@ -66,3 +66,4 @@ async def finalize_answer(answer: FinalAnswer):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Evaluation failed: {e}")
+
