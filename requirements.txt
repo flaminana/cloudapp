@@ -5,4 +5,7 @@ pydantic
 requests
 dotenv
 python-multipart
-supabase-py
+<<<<<<< HEAD
+=======
+supabase
+>>>>>>> d851c30 (Fixed supabase dependency name)
