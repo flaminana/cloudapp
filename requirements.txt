@@ -5,5 +5,4 @@ pydantic
 requests
 dotenv
 python-multipart
-pyaudioop
 supabase-py
