@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DirectTranslation Test</title>
+</head>
+<body>
+  <h1>🎙️ Test /translate/audio</h1>
+  <form id="audioForm" enctype="multipart/form-data">
+    <label>Audio File (.wav):</label>
+    <input type="file" name="file" accept=".wav" required><br><br>
+    <label>Direction:</label>
+    <select name="direction">
+      <option value="ENG-GER">English → German</option>
+      <option value="GER-ENG">German → English</option>
+    </select><br><br>
+    <label>User ID:</label>
+    <input type="text" name="user_id" value="esp32-user"><br><br>
+    <button type="submit">Send Audio</button>
+  </form>
+  <pre id="audioResult"></pre>
+
+  <hr>
+
+  <h1>📝 Test /translate/text</h1>
+  <form id="textForm">
+    <label>Text:</label>
+    <input type="text" name="text" required><br><br>
+    <label>Direction:</label>
+    <select name="direction">
+      <option value="ENG-GER">English → German</option>
+      <option value="GER-ENG">German → English</option>
+    </select><br><br>
+    <label>User ID:</label>
+    <input type="text" name="user_id" value="esp32-user"><br><br>
+    <button type="submit">Translate Text</button>
+  </form>
+  <pre id="textResult"></pre>
+
+  <hr>
+
+  <h1>📜 Test /translate/history</h1>
+  <form id="historyForm">
+    <label>User ID:</label>
+    <input type="text" id="historyUserId" value="esp32-user"><br><br>
+    <button type="submit">Get History</button>
+  </form>
+  <pre id="historyResult"></pre>
+
+  <script>
+    const baseURL = "http://127.0.0.1:8000";
+
+    document.getElementById("audioForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const res = await fetch(`${baseURL}/translate/audio`, {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      document.getElementById("audioResult").textContent = JSON.stringify(data, null, 2);
+    };
+
+    document.getElementById("textForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const res = await fetch(`${baseURL}/translate/text`, {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      document.getElementById("textResult").textContent = JSON.stringify(data, null, 2);
+    };
+
+    document.getElementById("historyForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const userId = document.getElementById("historyUserId").value;
+      const res = await fetch(`${baseURL}/translate/history?user_id=${userId}`);
+      const data = await res.json();
+      document.getElementById("historyResult").textContent = JSON.stringify(data, null, 2);
+    };
+  </script>
+</body>
+</html>

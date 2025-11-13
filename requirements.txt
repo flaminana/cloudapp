@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+vosk
+pydantic
+requests
+dotenv
+python-multipart
+pyaudioop
+supabase-py

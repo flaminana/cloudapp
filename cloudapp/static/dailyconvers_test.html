@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Daily Conversation Test</title>
+</head>
+<body>
+  <h1>🗣️ Daily German Conversation</h1>
+
+  <button onclick="getPrompt()">Get New Question</button>
+  <p id="question"></p>
+
+  <button onclick="startRecording()">🎙️ Start Recording</button>
+  <button onclick="stopRecording()">⏹️ Stop & Transcribe</button>
+  <p id="transcription"></p>
+
+  <button onclick="finalizeAnswer()">✅ Check Answer</button>
+  <p id="feedback"></p>
+  <p id="status" style="color: green;"></p>
+
+  <script>
+    let promptId = "";
+    let finalText = "";
+    let mediaRecorder;
+    let audioChunks = [];
+
+    async function getPrompt() {
+      const res = await fetch("/daily/prompt");
+      const data = await res.json();
+      promptId = data.prompt_id;
+      document.getElementById("question").innerText = "📝 " + data.sentence;
+    }
+
+    async function startRecording() {
+      document.getElementById("status").innerText = "🎙️ Recording...";
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+
+      mediaRecorder.ondataavailable = event => {
+        audioChunks.push(event.data);
+      };
+
+      mediaRecorder.start();
+    }
+
+    async function stopRecording() {
+        document.getElementById("status").innerText = "⏳ Transcribing...";
+        mediaRecorder.stop();
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+        const formData = new FormData();
+        formData.append("file", audioBlob, "recording.wav");
+
+        const res = await fetch("/daily/record", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        finalText = data.recognized_text;
+        document.getElementById("transcription").innerText = "🗣️ You said: " + finalText;
+      };
+    }
+
+    async function finalizeAnswer() {
+  const res = await fetch("/daily/finalize", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      prompt_id: promptId,
+      user_id: "nur123",
+      final_text: finalText
+    })
+  });
+
+  const data = await res.json();
+  document.getElementById("status").innerText = "✅ Transcription complete";
+  document.getElementById("feedback").innerText =
+    `✅ Score: ${data.score} | ${data.feedback}`;
+}
+  </script>
+</body>
+</html>
