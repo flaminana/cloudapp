@@ -6,4 +6,3 @@ requests
 dotenv
 python-multipart
 jinja2
-pyaudioop
