@@ -7,10 +7,12 @@ __pycache__/
 # Audio
 static/audio/
 
-
 # VSCode
 .vscode/
 
 # OS
 .DS_Store
 Thumbs.db
+
+!models/piper/*.onnx
+!models/piper/*.onnx.json
