@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from models.schemas import DailyPrompt, STTResult, FinalAnswer, ScoreFeedback
 from services.openrouter import generate_german_prompt
@@ -67,7 +66,6 @@ async def finalize_answer(answer: FinalAnswer):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Evaluation failed: {e}")
-=======
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from schemas import DailyPrompt, STTResult, FinalAnswer, ScoreFeedback
 from services.openrouter import generate_german_prompt
@@ -137,4 +135,3 @@ async def finalize_answer(answer: FinalAnswer):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Evaluation failed: {e}")
 
->>>>>>> 4daf35df3639cf69d5b0bd39ee5223fb11288d9b

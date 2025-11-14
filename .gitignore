@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Python
 __pycache__/
 *.pyc
@@ -8,9 +7,6 @@ __pycache__/
 # Audio
 static/audio/
 
-# Models
-models/vosk-*/
-models/piper/
 
 # VSCode
 .vscode/
@@ -18,12 +14,3 @@ models/piper/
 # OS
 .DS_Store
 Thumbs.db
-=======
-.venv/
-__pycache__/
-*.pyc
-temp.wav
-temp.webm
-bin/
-.env
->>>>>>> 4daf35df3639cf69d5b0bd39ee5223fb11288d9b
