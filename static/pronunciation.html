@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -127,4 +128,135 @@ window.onload = () => {
 };
 </script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pronunciation Exercise</title>
+</head>
+<body>
+  <h1>🗣️ Pronunciation Practice</h1>
+
+  <button onclick="getWord()">🔄 Get New Word</button>
+  <p id="wordDisplay"></p>
+
+  <button onclick="startRecording()">🎙️ Start Recording</button>
+  <button onclick="stopRecording()">⏹️ Stop & Transcribe</button>
+  <p id="transcription"></p>
+
+  <button onclick="evaluate()">✅ Evaluate Pronunciation</button>
+  <p id="score"></p>
+  <p id="advice"></p>
+
+  <button onclick="finalize()">📦 Finalize Attempt</button>
+  <p id="status" style="color: green;"></p>
+
+  <script>
+window.onload = () => {
+  let wordId = "";
+  let germanWord = "";
+  let userId = "nur123";
+  let recognizedText = "";
+  let score = 0;
+  let mediaRecorder;
+  let audioChunks = [];
+
+  window.getWord = async function () {
+    const res = await fetch("/pronunciation/word");
+    const data = await res.json();
+    wordId = data.word_id;
+    germanWord = data.german;
+    document.getElementById("wordDisplay").innerText = `📝 Word: ${germanWord} (${data.english})`;
+  };
+
+  window.startRecording = async function () {
+    document.getElementById("status").innerText = "🎙️ Recording...";
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+
+    mediaRecorder.ondataavailable = event => {
+      audioChunks.push(event.data);
+    };
+
+    mediaRecorder.start();
+  };
+
+  window.stopRecording = async function () {
+    document.getElementById("status").innerText = "⏳ Transcribing...";
+    mediaRecorder.stop();
+
+    mediaRecorder.onstop = async () => {
+      const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+      const formData = new FormData();
+      formData.append("file", audioBlob, "recording.wav");
+
+      const res = await fetch("/pronunciation/record", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      recognizedText = data.recognized_text;
+      document.getElementById("transcription").innerText = `🗣️ You said: ${recognizedText}`;
+    };
+  };
+
+  window.evaluate = async function () {
+    console.log("📤 Evaluate button clicked");
+
+    const payload = {
+      word_id: wordId,
+      user_id: userId,
+      target_word: germanWord,
+      recognized_text: recognizedText
+    };
+
+    console.log("📤 Sending to /evaluate:", payload);
+
+    try {
+      const res = await fetch("/pronunciation/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server responded with ${res.status}`);
+      }
+
+      const data = await res.json();
+      console.log("✅ Evaluation response:", data);
+
+      score = data.score;
+      document.getElementById("score").innerText = `🎯 Score: ${score}%`;
+      document.getElementById("advice").innerText = `💡 Advice: ${data.advice}`;
+    } catch (err) {
+      console.error("❌ Evaluation failed:", err);
+      document.getElementById("score").innerText = "❌ Evaluation failed";
+      document.getElementById("advice").innerText = "";
+    }
+  };
+
+  window.finalize = async function () {
+    const res = await fetch("/pronunciation/finalize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        word_id: wordId,
+        user_id: userId,
+        final_text: recognizedText,
+        score: score
+      })
+    });
+
+    const data = await res.json();
+    document.getElementById("status").innerText = `✅ Final attempt saved`;
+  };
+};
+</script>
+</body>
+>>>>>>> 4daf35df3639cf69d5b0bd39ee5223fb11288d9b
 </html>

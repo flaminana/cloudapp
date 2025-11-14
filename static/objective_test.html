@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -74,4 +75,82 @@
 
   </script>
 </body>
+=======
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Objective Quiz Test</title>
+  <meta charset="UTF-8" />
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    button { margin: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>🎯 Objective Quiz</h1>
+  <div id="quiz">
+    <p id="question">Loading question...</p>
+    <div id="options"></div>
+    <p id="feedback"></p>
+    <button id="next-btn" style="display:none;">Next question</button>
+  </div>
+
+  <script>
+    let correctAnswer = "";
+    let questionNumber = 0;
+
+    async function loadQuestion() {
+      const res = await fetch("/objective/question");
+      const data = await res.json();
+      document.getElementById("question").textContent = data.question;
+      questionNumber = data.question_number;
+      correctAnswer = data.answer; // for testing only
+
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+      data.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.onclick = () => {
+          const cleanAnswer = opt.replace(/^[A-D]\)\s*/, ""); // removes "A) ", "B) ", etc.
+          submitAnswer(opt);
+        }
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    async function submitAnswer(userAnswer) {
+      const res = await fetch("/objective/answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: "test-user",  
+          question_number: questionNumber,
+          correct_answer: correctAnswer,
+          answer: userAnswer,
+          // For now, we send the correct answer back (stateless demo)
+        })
+      });
+
+      const result = await res.json();
+      document.getElementById("feedback").textContent = result.is_correct
+        ? "✅ Correct!"
+        : "❌ Incorrect.";
+
+        // Show next question button
+      document.getElementById("next-btn").style.display = "inline-block";
+    }
+
+    loadQuestion();
+
+    // Next question button handler
+    document.getElementById("next-btn").onclick = () => {
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("next-btn").style.display = "none";
+      loadQuestion();
+    };
+
+  </script>
+</body>
+>>>>>>> 4daf35df3639cf69d5b0bd39ee5223fb11288d9b
 </html>

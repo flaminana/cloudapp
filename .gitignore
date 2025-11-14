@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Python
 __pycache__/
 *.pyc
@@ -17,3 +18,12 @@ models/piper/
 # OS
 .DS_Store
 Thumbs.db
+=======
+.venv/
+__pycache__/
+*.pyc
+temp.wav
+temp.webm
+bin/
+.env
+>>>>>>> 4daf35df3639cf69d5b0bd39ee5223fb11288d9b
