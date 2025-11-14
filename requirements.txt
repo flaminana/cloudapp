@@ -5,7 +5,5 @@ pydantic
 requests
 dotenv
 python-multipart
-<<<<<<< HEAD
-=======
 supabase
->>>>>>> d851c30 (Fixed supabase dependency name)
+piper-tts

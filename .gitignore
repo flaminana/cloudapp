@@ -1,12 +1,19 @@
-# Ignore large model files
-models/piper/*.onnx
-
-# Ignore virtual environment
-.venv/
-
-# Ignore Python cache
+# Python
 __pycache__/
 *.pyc
+.venv/
+.env
 
-# Ignore temporary files
-temp.*
+# Audio
+static/audio/
+
+# Models
+models/vosk-*/
+models/piper/
+
+# VSCode
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

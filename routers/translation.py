@@ -31,7 +31,7 @@ async def translate_audio(
     translated_text = translate_text(original_text, direction)
 
     # TTS
-    synthesize_audio(translated_text, output_path)
+    synthesize_audio(translated_text, output_path, direction)
 
     # Save history to Supabase
     supabase.table("translation_history").insert({
