@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 fastapi
 uvicorn
 vosk
@@ -8,7 +7,6 @@ dotenv
 python-multipart
 supabase
 piper-tts
-=======
 fastapi
 uvicorn
 vosk
@@ -17,4 +15,3 @@ requests
 dotenv
 python-multipart
 jinja2
->>>>>>> 4daf35df3639cf69d5b0bd39ee5223fb11288d9b
