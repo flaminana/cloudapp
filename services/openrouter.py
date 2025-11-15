@@ -23,7 +23,7 @@ def get_objective_question():
         "Return JSON like: {\"question\": \"...\", \"options\": [\"A\", \"B\", \"C\", \"D\"], \"answer\": \"A\"}"
     )
     data = {
-        "model": "gpt-3.5-turbo",
+        "model": "qwen2.5-coder-7b-instruct",
         "messages": [
             {"role": "system", "content": "You are a German quiz generator."},
             {"role": "user", "content": prompt}
@@ -82,7 +82,7 @@ def call_openrouter_model(prompt: str):
         "Content-Type": "application/json"
     }
     data = {
-        "model": "gpt-3.5-turbo",  # or "mistral" if you're using that
+        "model": "qwen2.5-coder-7b-instruct",  
         "messages": [
             {"role": "system", "content": "You are a helpful German language assistant."},
             {"role": "user", "content": prompt}
