@@ -4,3 +4,7 @@ services:
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: bash start.sh
+
+build:
+  environment:
+  pythonVersion: 3.11.7
