@@ -37,6 +37,10 @@ def get_objective_question():
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json"
     }
+    if not OPENROUTER_API_KEY:
+            print("❌ Missing OpenRouter API key")
+            return {"error": "Missing OpenRouter API key", "raw": ""}
+    
     prompt = (
         "Generate a German vocabulary multiple-choice question for A1 learners." 
         "Respond ONLY with JSON in this format: {\"question\": \"...\", \"options\": {\"A\": \"...\", \"B\": \"...\", \"C\": \"...\", \"D\": \"...\"}, \"answer\": \"A\"}"
@@ -86,7 +90,7 @@ def get_objective_question():
 
     except Exception as e:
             print("❌ OpenRouter error:", e)
-            return {"error": str(e), "raw": content}
+            return {"error": str(e), "raw": "No content returned due to error"}
 
 def check_objective_answer(correct_answer, user_answer):
     # Returns True if the user's answer matches the correct answer
@@ -126,6 +130,10 @@ def call_openrouter_model(prompt: str):
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json"
     }
+    if not OPENROUTER_API_KEY:
+        print("❌ Missing OpenRouter API key")
+        return {"error": "Missing OpenRouter API key", "raw": ""}
+
     data = {
         "model": "mistralai/mistral-7b-instruct",  
         "messages": [
