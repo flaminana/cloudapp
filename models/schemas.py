@@ -3,15 +3,18 @@ from typing import List
 
 class ObjectiveQuestion(BaseModel):
     question: str
-    options: List[str]
+    options: dict[str, str]
     question_number: int
+    answer: str
+
+class SingleAnswer(BaseModel):
+    question_number: int
+    correct_answer: str
     answer: str
 
 class ObjectiveAnswer(BaseModel):
     user_id: str
-    question_number: int
-    correct_answer: str
-    answer: str 
+    answers: List[SingleAnswer]
 
 class ScoreResponse(BaseModel):
     is_correct: bool

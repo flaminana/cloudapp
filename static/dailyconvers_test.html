@@ -24,6 +24,11 @@
     let mediaRecorder;
     let audioChunks = [];
 
+    let questionNumber = 0;
+    let totalScore = 0;
+
+    const USER_ID = "af7c51c4-f34b-4cb5-bd8f-3475b1491f10";
+
     async function getPrompt() {
       const res = await fetch("/daily/prompt");
       const data = await res.json();
@@ -66,21 +71,43 @@
     }
 
     async function finalizeAnswer() {
-  const res = await fetch("/daily/finalize", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      prompt_id: promptId,
-      user_id: "nur123",
-      final_text: finalText
-    })
-  });
+      const res = await fetch("/daily/finalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+        prompt_id: promptId,
+        user_id: USER_ID,  // ✅ Now using your fixed UUID
+        final_text: finalText
+      })
+      });
+      
+      if (!res.ok) {
+        const error = await res.json();
+        document.getElementById("feedback").innerText = `⚠️ ${error.detail}`;
+        document.getElementById("status").innerText = "❌ Try again";
+        return;
+      }
 
-  const data = await res.json();
-  document.getElementById("status").innerText = "✅ Transcription complete";
-  document.getElementById("feedback").innerText =
-    `✅ Score: ${data.score} | ${data.feedback}`;
-}
+      const data = await res.json();
+
+      totalScore = data.total_score;
+      questionNumber = data.question_number;
+
+      document.getElementById("status").innerText = "✅ Transcription complete";
+      document.getElementById("feedback").innerText =
+        `✅ Score: ${data.score} | ${data.feedback}`;
+
+      if (data.is_finished) {
+        document.getElementById("question").innerText = `🏁 Exercise complete! Final score: ${totalScore}/5`;
+        document.getElementById("status").innerText = "🎉 Well done!";
+      } else {
+        await getPrompt(); // Load next question
+        document.getElementById("transcription").innerText = "";
+        document.getElementById("feedback").innerText = "";
+        document.getElementById("status").innerText = `➡️ Question ${questionNumber + 1}`;
+      }
+    }
+
   </script>
 </body>
 </html>

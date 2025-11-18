@@ -1,6 +1,9 @@
 from fastapi import APIRouter, HTTPException, Request
 from models.schemas import ObjectiveQuestion, ObjectiveAnswer, ScoreResponse
 from services.openrouter import get_objective_question, check_objective_answer
+from models.db import save_objective_score
+
+user_state = {}
 
 router = APIRouter(prefix="/objective", tags=["Objective Quiz"])
 
@@ -11,7 +14,11 @@ router = APIRouter(prefix="/objective", tags=["Objective Quiz"])
 async def get_question():
     try:
         result = get_objective_question()
-        # For now, send all info including the answer (frontend should hide it from the user)
+        
+        #Check for error response
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=f"OpenRouter error: {result['error']}")
+        
         return ObjectiveQuestion(
             question=result["question"],
             options=result["options"],
@@ -23,17 +30,31 @@ async def get_question():
 
 @router.post("/answer", response_model=ScoreResponse)
 async def submit_answer(answer: ObjectiveAnswer, request: Request):
-    try:
-        body = await request.json()
-        print ("📦 Received payload:", body)
+    raw = await request.body()
+    print("📨 Raw request body:", raw.decode())
 
-        # For stateless demo, frontend must send the correct answer in request body
-        # In production, store correct answers in backend and use a question_id
-        is_correct = check_objective_answer(answer.correct_answer, answer.answer)  # Replace with (correct_answer, answer.answer)
+    user_id = answer.user_id
+    if user_id not in user_state:
+        user_state[user_id] = {"score": 0, "question": 0}
+
+    try: 
+        for item in answer.answers:
+            if check_objective_answer(item.correct_answer, item.answer):
+                user_state[user_id]["score"] += 1
+            user_state[user_id]["question"] += 1
+
+        # Only save to Supabase when user finishes all 5 questions
+        if user_state[user_id]["question"] >= 5:
+            save_objective_score(
+                user_id,
+                correct=user_state[user_id]["score"],
+                available=5
+            )
+
         return ScoreResponse(
-            is_correct=is_correct,
-            current_score=1 if is_correct else 0,
-            question_number=answer.question_number
-        )
+            is_correct=True,
+            current_score=user_state[user_id]["score"],
+            question_number=user_state[user_id]["question"]
+        ) 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to check answer: {e}")

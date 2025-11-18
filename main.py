@@ -2,8 +2,11 @@ from fastapi import FastAPI
 from routers import objective, pronunciation, daily_conversation, translation
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from dotenv import load_dotenv
+load_dotenv()
 import os
 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\ASUS\Desktop\VSCodeProjects\cloudapp\keys\google_stt_key.json"
 app = FastAPI() # ✅ First, create the app
 
 # ✅ Then mount static files

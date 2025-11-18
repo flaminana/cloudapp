@@ -5,7 +5,7 @@ import json
 def transcribe_audio(file_path: str, direction: str) -> str:
     # Choose model based on direction
     if direction == "GER-ENG":
-        model_path = "models/vosk-model-small-de-0.15"
+        model_path = "models/vosk-model-small-de-0.21"
     elif direction == "ENG-GER":
         model_path = "models/vosk-model-small-en-us-0.15"
     else:

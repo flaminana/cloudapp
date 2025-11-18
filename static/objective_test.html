@@ -18,27 +18,32 @@
   </div>
 
   <script>
+    const USER_ID = "af7c51c4-f34b-4cb5-bd8f-3475b1491f10";
+
+    let seenQuestions = new Set();
     let correctAnswer = "";
     let questionNumber = 0;
+    let totalScore = 0;
+    let totalQuestions = 5;
 
     async function loadQuestion() {
       const res = await fetch("/objective/question");
       const data = await res.json();
       document.getElementById("question").textContent = data.question;
-      questionNumber = data.question_number;
+      questionNumber += 1;
       correctAnswer = data.answer; // for testing only
 
       const optionsDiv = document.getElementById("options");
       optionsDiv.innerHTML = "";
-      data.options.forEach((opt, i) => {
+
+      for (const [key, value] of Object.entries(data.options)) {
         const btn = document.createElement("button");
-        btn.textContent = opt;
+        btn.textContent = `${key}) ${value}`;
         btn.onclick = () => {
-          const cleanAnswer = opt.replace(/^[A-D]\)\s*/, ""); // removes "A) ", "B) ", etc.
-          submitAnswer(opt);
-        }
-        optionsDiv.appendChild(btn);
-      });
+          submitAnswer(key); // Send "A", "B", "C", or "D"
+        };
+  optionsDiv.appendChild(btn);
+      }
     }
 
     async function submitAnswer(userAnswer) {
@@ -46,21 +51,32 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: "test-user",  
-          question_number: questionNumber,
-          correct_answer: correctAnswer,
-          answer: userAnswer,
+          user_id: USER_ID,  
+          answers:[
+            {
+              question_number: questionNumber,
+              correct_answer: correctAnswer,
+              answer: userAnswer
+            }
+          ]
           // For now, we send the correct answer back (stateless demo)
         })
       });
 
       const result = await res.json();
-      document.getElementById("feedback").textContent = result.is_correct
-        ? "✅ Correct!"
-        : "❌ Incorrect.";
+      if (result.is_correct) {
+        totalScore += 1;
+      }
 
-        // Show next question button
-      document.getElementById("next-btn").style.display = "inline-block";
+      const feedback = result.is_correct ? "✅ Correct!" : "❌ Incorrect.";
+      document.getElementById("feedback").textContent = `${feedback} (${totalScore}/${questionNumber})`;
+
+      if (questionNumber >= totalQuestions) {
+        document.getElementById("next-btn").style.display = "none";
+        document.getElementById("feedback").textContent += ` 🎉 Final Score: ${totalScore}/${totalQuestions}`;
+      } else {
+        document.getElementById("next-btn").style.display = "inline-block";
+      }
     }
 
     loadQuestion();
