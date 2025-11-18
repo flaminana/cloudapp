@@ -2,6 +2,8 @@ import os
 from google.cloud import speech
 import io
 from pydub import AudioSegment
+from google.oauth2 import service_account
+import json
 
 # 🔤 Map user-facing codes to valid Google STT language codes
 LANGUAGE_CODE_MAP = {
@@ -17,7 +19,7 @@ LANGUAGE_CODE_MAP = {
 }
 
 # Set credentials
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/google_stt_key.json"
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/google_stt_key.json"
 
 def convert_to_mono(input_path, output_path):
     audio = AudioSegment.from_wav(input_path)
@@ -32,7 +34,13 @@ def transcribe_audio_google(wav_path, language_code="de-DE")-> str:
         language_code = LANGUAGE_CODE_MAP.get(language_code.upper(), "en-US")
         print(f"🔍 Using language_code: {language_code}")
 
-        client = speech.SpeechClient()
+        key_data = os.environ.get("GOOGLE_STT_KEY_JSON")
+        if not key_data:
+            raise RuntimeError("Missing GOOGLE_STT_KEY_JSON in environment")
+
+        credentials = service_account.Credentials.from_service_account_info(json.loads(key_data))
+        client = speech.SpeechClient(credentials=credentials)
+
         with open(wav_path, "rb") as audio_file:
             content = audio_file.read()
         audio = speech.RecognitionAudio(content=content)
@@ -52,9 +60,7 @@ def transcribe_audio_google(wav_path, language_code="de-DE")-> str:
             return ""
 
         return response.results[0].alternatives[0].transcript
-        if not response.results:
-            return ""
-        return response.results[0].alternatives[0].transcript
+        
     except Exception as e:
         print("❌ STT error:", e)
         raise

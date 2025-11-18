@@ -40,7 +40,6 @@ def get_objective_question():
     if not OPENROUTER_API_KEY:
             print("❌ Missing OpenRouter API key")
             return {"error": "Missing OpenRouter API key", "raw": ""}
-    
     prompt = (
         "Generate a German vocabulary multiple-choice question for A1 learners." 
         "Respond ONLY with JSON in this format: {\"question\": \"...\", \"options\": {\"A\": \"...\", \"B\": \"...\", \"C\": \"...\", \"D\": \"...\"}, \"answer\": \"A\"}"
