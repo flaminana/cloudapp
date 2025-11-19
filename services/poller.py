@@ -3,7 +3,6 @@ import time
 from threading import Thread
 from supabase import create_client, Client
 from services.processed_tracker import load_processed, save_processed
-from services.translation_pipeline import process_audio_file  # You’ll define this
 from services.translation_pipeline import process_supabase_record
 from models.db import supabase
 
