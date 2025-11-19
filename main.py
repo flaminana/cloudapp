@@ -3,6 +3,9 @@ from routers import objective, pronunciation, daily_conversation, translation
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from dotenv import load_dotenv
+from services.poller import poll_supabase
+from threading import Thread
+
 load_dotenv()
 import os
 
@@ -22,3 +25,7 @@ app.include_router(translation.router)
 @app.get("/test-objective")
 def serve_test_page():
     return FileResponse(os.path.join("static", "objective_test.html"))
+
+@app.on_event("startup")
+def start_polling():
+    Thread(target=poll_supabase, daemon=True).start()
