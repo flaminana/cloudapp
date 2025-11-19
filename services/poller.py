@@ -23,10 +23,11 @@ def poll_supabase():
 
             # 🧠 Find the first row that has a voice_input_url but no voice_output_url
             for record in response.data:
-                if record.get("voice_input_url", "").startswith("http") and not record.get("voice_output_url"):
+                url = record.get("voice_input_url")
+                if isinstance(url, str) and url.startswith("http") and not record.get("voice_output_url"):
                     print(f"🆕 Found unprocessed record: {record['id']}")
                     process_supabase_record(record)
-                    break  # process one at a time
+                    break
 
         except Exception as e:
             print("❌ Polling error:", e)
