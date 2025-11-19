@@ -13,7 +13,7 @@ def poll_supabase():
         try:
             # 🔍 Get the latest 10 rows from translation_history
             response = supabase.table("translation_history") \
-                .select("*") \
+                .select("id, user_id, direction, voice_input_url, voice_output_url") \
                 .order("created_at", desc=True) \
                 .limit(10) \
                 .execute()
