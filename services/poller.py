@@ -4,28 +4,31 @@ from threading import Thread
 from supabase import create_client, Client
 from services.processed_tracker import load_processed, save_processed
 from services.translation_pipeline import process_audio_file  # You’ll define this
+from services.translation_pipeline import process_supabase_record
+from models.db import supabase
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def poll_supabase():
-    processed = load_processed()
-
     while True:
         try:
-            response = supabase.storage.from_("voice-recordings").list("English")  # or "German"
-            files = response or []
+            # 🔍 Get the latest 10 rows from translation_history
+            response = supabase.table("translation_history") \
+                .select("*") \
+                .order("created_at", desc=True) \
+                .limit(10) \
+                .execute()
 
-            for file in files:
-                name = file["name"]
-                if name.endswith(".wav") and name not in processed:
-                    print(f"🆕 New file detected: {name}")
-                    process_audio_file(name)
-                    processed.add(name)
-                    save_processed(processed)
+            # 🧠 Find the first row that has a voice_input_url but no voice_output_url
+            for record in response.data:
+                if record.get("voice_input_url", "").startswith("http") and not record.get("voice_output_url"):
+                    print(f"🆕 Found unprocessed record: {record['id']}")
+                    process_supabase_record(record)
+                    break  # process one at a time
 
         except Exception as e:
             print("❌ Polling error:", e)
 
-        time.sleep(5)
+        time.sleep(5)  # ⏱️ Wait before checking again
