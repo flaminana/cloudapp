@@ -1,5 +1,6 @@
 # services/poller.py
 import time
+import os
 from threading import Thread
 from supabase import create_client, Client
 from services.processed_tracker import load_processed, save_processed
