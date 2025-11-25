@@ -14,6 +14,10 @@ def process_supabase_record(record: dict) -> dict:
         direction = record["direction"]
         input_url = record["voice_input_url"]
 
+        if not isinstance(direction, str):
+            print(f"❌ Invalid direction in record {history_id}: {direction}")
+            return {"error": "Invalid direction"}
+
         if direction == "de_to_en":
             direction = "GER-ENG"
         elif direction == "en_to_de":
@@ -28,6 +32,11 @@ def process_supabase_record(record: dict) -> dict:
         convert_to_mono(input_path, mono_path)
 
         original_text = transcribe_audio_google(mono_path, direction)
+
+        if not original_text or original_text.strip() == "":
+            print(f"❌ No transcription results for record {history_id}")
+            return {"error": "No transcription results"}
+
         translated_text = translate_text(original_text, direction)
 
         output_path = f"temp_output.wav"
