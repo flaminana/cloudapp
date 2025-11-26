@@ -9,6 +9,8 @@ from threading import Thread
 load_dotenv()
 import os
 
+print("DEBUG: models/piper contents ->", os.listdir("models/piper"))
+
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\ASUS\Desktop\VSCodeProjects\cloudapp\keys\google_stt_key.json"
 app = FastAPI() # ✅ First, create the app
 
